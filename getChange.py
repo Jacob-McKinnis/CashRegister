@@ -15,7 +15,11 @@ currencyZero = decimal.Decimal("0")
 specialDivisor = "3"
 
 currencyUnits = [
-    ["1","dollar","dollars"],
+    ["100","100 dollar bill","100 dollar bills"],
+    ["20","20 dollar bill","20 dollar bills"],
+    ["10","10 dollar bill","10 dollar bills"],
+    ["5","5 dollar bill","5 dollar bills"],
+    ["1","1 dollar bill","1 dollar bills"],
     ["0.25","quarter","quarters"],
     ["0.1","dime","dimes"],
     ["0.05","nickle","nickles"],
