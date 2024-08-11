@@ -4,6 +4,7 @@
 import argparse
 import decimal
 import os
+import random
 import sys
 
 # Global variables:
@@ -110,6 +111,29 @@ for x in f:
     
     if owed % divisor == currencyZero:
         debugPrint("Special case")
+        
+        unitCounts = {}
+        for index, unit in enumerate(currencyUnits):
+            unitCounts[index] = 0
+            
+        while changeRemaining > currencyZero:
+            # Choose a unit at random 
+            index = random.randint(0, len(currencyUnits) - 1)
+            randUnit = currencyUnits[index]
+            unitValue = decimal.Decimal(randUnit[0])
+            if unitValue <= changeRemaining:
+                # Update the chosen unit's count
+                unitCounts[index] += 1
+                changeRemaining -= unitValue
+                debugPrint(changeRemaining)
+        debugPrint(unitCounts)
+        
+        for index, unit in enumerate(currencyUnits):
+            count = unitCounts[index]
+            if count == 1:
+                results.append(f"{count} {unit[1]}")
+            elif count > 1:
+                results.append(f"{count} {unit[2]}")
     else:
         for unit in currencyUnits:
             count = 0
