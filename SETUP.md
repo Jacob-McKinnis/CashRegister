@@ -18,5 +18,5 @@ python --version
 
 
 // Once python is installed, run the file using this command:
-python getChange.py 
+python getChange.py -h
 
