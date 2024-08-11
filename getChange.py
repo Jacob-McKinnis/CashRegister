@@ -1,5 +1,6 @@
+'''Get Change: A script to calculate the amount of change owed in cash transactions'''
 # Author: Jacob McKinnis 
-# Last Edited: 08/10/2024
+# Last Edited: 08/11/2024
 
 import argparse
 import decimal
@@ -18,14 +19,19 @@ specialDivisor = "3"
 outFileCharactersAllowed = "Only alphanumeric and underscore characters allowed."
 
 class CurrencyUnit:
+    '''A unit of currency (i.e. a dollar bill)'''
     def __init__(self, value: str, name: str, pluralName: str):
         self.name = name
         self.pluralName = pluralName
         self.value = decimal.Decimal(value)
 
 class Currency:
+    '''A type of currency (i.e. the Euro or US Dollar)'''
     def __init__(self, code, unitList: list[list[str]]):
-        # The currency's ISO 4217 currency code
+        ''' 
+        code: The currency's ISO 4217 currency code \n
+        unitList: A list of lists of values to populate CurrencyUnits. \n
+        '''
         self.code = code
         
         units: list[CurrencyUnit] = []
@@ -74,18 +80,19 @@ defaultCurrency = "USD"
 selectedCurrency = currencyOptions[defaultCurrency]
 
 ## Functions: 
-# A helper function to output debugging information 
 def debugPrint(info):
+    '''A helper function to output debugging information '''
     if debugMode: print(info)
     
-# A helper function to safely quit on error, handling file closing as needed
 def errorQuit(error: str, file = None):
+    '''A helper function to safely quit on error, handling file closing as needed'''
     if file is not None:
         file.close() 
     sys.exit(error)
     
-# A helper function to output currency values
+# 
 def getCurrencyValue(currency):
+    '''A helper function to output currency values'''
     return currency.quantize(selectedCurrency.minorUnit)
 
 # 1. Setup
@@ -171,6 +178,12 @@ for x in f:
         
     if not math.isfinite(owed) or not math.isfinite(paid):
         errorQuit(f"Invalid values: unable to convert values in '{line}' to currency", f)
+        
+    if owed < currencyZero or paid < currencyZero:
+        errorQuit(f"Invalid values: negative values in '{line}' not allowed", f)
+        
+    if owed < selectedCurrency.minorUnit or paid < selectedCurrency.minorUnit:
+        errorQuit(f"Invalid values: values in '{line}' too small", f)
 
     debugPrint(f"Owed: {getCurrencyValue(owed)}")
     debugPrint(f"Paid: {getCurrencyValue(paid)}")
