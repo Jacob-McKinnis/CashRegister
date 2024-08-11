@@ -22,7 +22,7 @@ def errorQuit(error: str, file = None):
     
 # A helper function to output currency values
 def getCurrencyValue(currency):
-    return currency.quantize("0.01")
+    return currency.quantize(decimal.Decimal("0.01"))
 
 # 1. Setup
 ## 1.1 Set up permitted arguments
@@ -82,7 +82,7 @@ for x in f:
     
     debugPrint(f"Diff: {getCurrencyValue(change)}")
     
-    divisor = decimal.Decimal("3") * "0.01"
+    divisor = decimal.Decimal("3") * decimal.Decimal("0.01")
     debugPrint(owed % divisor)
     
     debugPrint("")
