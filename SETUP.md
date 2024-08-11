@@ -20,3 +20,13 @@ python --version
 // Once python is installed, run the file using this command:
 python getChange.py -h
 
+// This will list all valid parameters and the types of data they expect
+
+// A few example commands:
+python getChange.py -in input.txt
+
+python getChange.py -in input.txt -out output
+
+python getChange.py -in input.txt -out output -c USD
+
+python getChange.py -in input.txt -out output -c EUR
