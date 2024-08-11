@@ -72,11 +72,20 @@ def getCurrencyValue(currency):
 ## 1.1 Set up permitted arguments
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-f", 
-    "--file",
+    "-in", 
+    "--inputFile",
+    "--input",
     type=str, 
     help="The filepath of a flat file containing amounts owed " +
     "and paid seperated by a comma (for example: 2.13,3.00)"
+)
+parser.add_argument(
+    "-out", 
+    "--outputFile",
+    "--output",
+    type=str, 
+    default="change_output.txt",
+    help="The filename for the output file"
 )
 parser.add_argument(
     "-d", 
@@ -88,22 +97,26 @@ parser.add_argument(
 ## 1.2 Validate arguments
 args = parser.parse_args()
 debugMode = args.debug
-debugPrint(f"File: {args.file}")
+debugPrint(f"File: {args.inputFile}")
+selectedCurrency = currencyOptions[args.currencyCode]
 debugPrint(f"{selectedCurrency.code}")
 debugPrint("")
 
-if not os.path.isfile(args.file):
-    errorQuit(f"Invalid file: {args.file}")
+if not os.path.isfile(args.inputFile):
+    errorQuit(f"Invalid file: {args.inputFile}")
     
+if "/" in args.outputFile or "\\" in args.outputFile or "." not in args.outputFile:
+    errorQuit(f"Invalid output filename: {args.outputFile}")
+
 ## 1.3 Set up currency handling
 # Set the precison (aka number of significant digits) to 100
 decimal.getcontext().prec = currencyPrecision
 # From https://docs.python.org/3/library/decimal.html#rounding-modes
 # "Round to nearest with ties going towards zero."
 decimal.getcontext().rounding = currencyRounding
-    
+
 # 2. Process input file
-f = open(args.file, "r")
+f = open(args.inputFile, "r")
 output = []
 for x in f:
     line = x.rstrip('\r\n')
@@ -169,8 +182,6 @@ for x in f:
                 # Remove the too large unit from the random pool
                 maxUnitIndex = index + 1
                 debugPrint(f"Removing {randUnit.name} as a random option")
-                #debugPrint(maxUnitIndex)
-        #debugPrint(unitCounts)
         
         ### 2.3.3 Create the unit count strings for the output file
         for index, unit in enumerate(selectedCurrency.units):
@@ -200,3 +211,13 @@ for x in f:
     output.append(",".join(results))
     debugPrint("")
 f.close() 
+
+# 3. Write output file
+if len(output) > 0:
+    try: 
+        fOut = open(args.outputFile, "w")
+        fOut.writelines("\n".join(output))
+        fOut.close()
+    except:
+        debugPrint("Output file error: unable to create output file")
+    
