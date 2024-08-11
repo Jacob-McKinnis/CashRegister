@@ -40,15 +40,33 @@ class Currency:
 
 currencyOptions = {}        
 currencyOptions["USD"] = Currency("USD", [
-    ["100","100 dollar bill","100 dollar bills"],
-    ["20","20 dollar bill","20 dollar bills"],
-    ["10","10 dollar bill","10 dollar bills"],
-    ["5","5 dollar bill","5 dollar bills"],
-    ["1","1 dollar bill","1 dollar bills"],
+    ["100","hundred dollar bill","hundred dollar bills"],
+    ["50","fifty dollar bill","fifty dollar bills"],
+    ["20","twenty dollar bill","twenty dollar bills"],
+    ["10","ten dollar bill","ten dollar bills"],
+    ["5","five dollar bill","five dollar bills"],
+    ["1","one dollar bill","one dollar bills"],
     ["0.25","quarter","quarters"],
     ["0.1","dime","dimes"],
     ["0.05","nickle","nickles"],
     ["0.01","penny","pennies"],
+])
+currencyOptions["EUR"] = Currency("EUR", [
+    ["500","five hundred euro note","five hundred euro notes"],
+    ["200","two hundred euro note","two hundred euro notes"],
+    ["100","hundred euro note","hundred euro notes"],
+    ["50","fifty euro note","fifty euro notes"],
+    ["20","twenty euro note","twenty euro notes"],
+    ["10","ten euro note","ten euro notes"],
+    ["5","five euro note","five euro notes"],
+    ["2","two euro coin","two euro coins"],
+    ["1","one euro coin","one euro coins"],
+    ["0.50","fifty euro cent coin","fifty euro cent coins"],
+    ["0.20","twenty euro cent coin","twenty euro cent coins"],
+    ["0.10","ten euro cent coin","ten euro cent coins"],
+    ["0.05","five euro cent coin","five euro cent coins"],
+    ["0.02","two euro cent coin","two euro cent coins"],
+    ["0.01","one euro cent coin","one euro cent coins"],
 ])
 defaultCurrency = "USD"
 selectedCurrency = currencyOptions[defaultCurrency]
@@ -86,6 +104,15 @@ parser.add_argument(
     type=str, 
     default="change_output.txt",
     help="The filename for the output file"
+)
+parser.add_argument(
+    "-c", 
+    "--currencyCode",
+    "--code",
+    type=str, 
+    default="USD",
+    help=f"The ISO 4217 currency code for the chosen currency. " +
+    f"Current options: {",".join(list(currencyOptions.keys()))}"
 )
 parser.add_argument(
     "-d", 
