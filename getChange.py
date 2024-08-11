@@ -6,6 +6,7 @@ import decimal
 import math
 import os
 import random
+import re
 import sys
 
 # Global variables:
@@ -14,6 +15,7 @@ currencyPrecision = 100
 currencyRounding = decimal.ROUND_HALF_DOWN
 currencyZero = decimal.Decimal("0")
 specialDivisor = "3"
+outFileCharactersAllowed = "Only alphanumeric and underscore characters allowed."
 
 class CurrencyUnit:
     def __init__(self, value: str, name: str, pluralName: str):
@@ -99,11 +101,12 @@ parser.add_argument(
 )
 parser.add_argument(
     "-out", 
-    "--outputFile",
+    "--outputFilename",
+    "--outFile",
     "--output",
     type=str, 
-    default="change_output.txt",
-    help="The filename for the output file"
+    default="change_output",
+    help=f"The filename for the output file. {outFileCharactersAllowed}"
 )
 parser.add_argument(
     "-c", 
@@ -126,14 +129,15 @@ args = parser.parse_args()
 debugMode = args.debug
 debugPrint(f"File: {args.inputFile}")
 selectedCurrency = currencyOptions[args.currencyCode]
-debugPrint(f"{selectedCurrency.code}")
+debugPrint(f"Currency: {selectedCurrency.code}")
+debugPrint(f"Out File: {selectedCurrency.code}")
 debugPrint("")
 
 if not os.path.isfile(args.inputFile):
-    errorQuit(f"Invalid file: {args.inputFile}")
+    errorQuit(f"Invalid input file: '{args.inputFile}'")
     
-if "/" in args.outputFile or "\\" in args.outputFile or "." not in args.outputFile:
-    errorQuit(f"Invalid output filename: {args.outputFile}")
+if re.match('^[a-zA-Z0-9_]+$', args.outputFilename) is None:
+    errorQuit(f"Invalid output filename: '{args.outputFilename}'. {outFileCharactersAllowed}")
 
 ## 1.3 Set up currency handling
 # Set the precison (aka number of significant digits) to 100
@@ -241,8 +245,9 @@ f.close()
 
 # 3. Write output file
 if len(output) > 0:
+    outputFilename = f"{args.outputFilename}.txt"
     try: 
-        fOut = open(args.outputFile, "w")
+        fOut = open(outputFilename, "w")
         fOut.writelines("\n".join(output))
         fOut.close()
     except:
