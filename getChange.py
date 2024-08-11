@@ -8,6 +8,18 @@ import sys
 
 # Global variables:
 debugMode = False
+currencyPrecision = 100
+currencyRounding = decimal.ROUND_HALF_DOWN
+currencyZero = decimal.Decimal("0")
+specialDivisor = "3"
+
+currencyUnits = [
+    ["1","dollar","dollars"],
+    ["0.25","quarter","quarters"],
+    ["0.1","dime","dimes"],
+    ["0.05","nickle","nickles"],
+    ["0.01","penny","pennies"],
+]
 
 ## Functions: 
 # A helper function to output debugging information 
@@ -50,6 +62,13 @@ debugPrint("")
 if not os.path.isfile(args.file):
     errorQuit(f"Invalid file: {args.file}")
     
+## 1.3 Set up currency handling
+# Set the precison (aka number of significant digits) to 100
+decimal.getcontext().prec = currencyPrecision
+# From https://docs.python.org/3/library/decimal.html#rounding-modes
+# "Round to nearest with ties going towards zero."
+decimal.getcontext().rounding = currencyRounding
+    
 # 2. Process input file
 f = open(args.file, "r")
 output = []
@@ -57,6 +76,7 @@ for x in f:
     line = x.rstrip('\r\n')
     debugPrint(f"Line: {line}")
     
+    ## 2.1 line text validation
     if "," not in line:
         errorQuit(f"Invalid file formatting: '{line}' does not have a comma", f)
         
@@ -78,12 +98,34 @@ for x in f:
     if paid < owed:
         errorQuit(f"Invalid values: paid amount {paid} is less than owed amount {owed}", f)
     
+    ## 2.2 Process line text
     change = paid - owed
-    
     debugPrint(f"Diff: {getCurrencyValue(change)}")
     
-    divisor = decimal.Decimal("3") * decimal.Decimal("0.01")
+    divisor = decimal.Decimal(specialDivisor) * decimal.Decimal("0.01")
     debugPrint(owed % divisor)
+    
+    changeRemaining = change
+    results = []
+    
+    if owed % divisor == currencyZero:
+        debugPrint("Special case")
+    else:
+        for unit in currencyUnits:
+            count = 0
+            unitValue = decimal.Decimal(unit[0])
+            while unitValue <= changeRemaining:
+                count += 1
+                changeRemaining -= unitValue
+                debugPrint(changeRemaining)
+                
+            if count == 1:
+                results.append(f"{count} {unit[1]}")
+            elif count > 1:
+                results.append(f"{count} {unit[2]}")
+    
+    debugPrint(results)
+    output.append(",".join(results))
     
     debugPrint("")
 f.close() 
