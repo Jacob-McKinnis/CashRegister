@@ -6,15 +6,23 @@ import decimal
 import os
 import sys
 
+# Global variables:
+debugMode = False
+
 ## Functions: 
 # A helper function to output debugging information 
 def debugPrint(info):
     if debugMode: print(info)
     
+# A helper function to safely quit on error, handling file closing as needed
 def errorQuit(error: str, file = None):
     if file is not None:
         file.close() 
     sys.exit(error)
+    
+# A helper function to output currency values
+def getCurrencyValue(currency):
+    return currency.quantize("0.01")
 
 # 1. Setup
 ## 1.1 Set up permitted arguments
@@ -64,8 +72,18 @@ for x in f:
     except:
         errorQuit(f"Invalid values: unable to convert values in '{line}' to currency", f)
         
-    debugPrint(f"Owed: {owed}")
-    debugPrint(f"Paid: {paid}")
+    debugPrint(f"Owed: {getCurrencyValue(owed)}")
+    debugPrint(f"Paid: {getCurrencyValue(paid)}")
+    
+    if paid < owed:
+        errorQuit(f"Invalid values: paid amount {paid} is less than owed amount {owed}", f)
+    
+    change = paid - owed
+    
+    debugPrint(f"Diff: {getCurrencyValue(change)}")
+    
+    divisor = decimal.Decimal("3") * "0.01"
+    debugPrint(owed % divisor)
     
     debugPrint("")
 f.close() 
