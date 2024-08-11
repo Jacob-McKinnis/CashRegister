@@ -115,10 +115,11 @@ for x in f:
         unitCounts = {}
         for index, unit in enumerate(currencyUnits):
             unitCounts[index] = 0
-            
+        
+        maxUnitIndex = 0
         while changeRemaining > currencyZero:
             # Choose a unit at random 
-            index = random.randint(0, len(currencyUnits) - 1)
+            index = random.randint(maxUnitIndex, len(currencyUnits) - 1)
             randUnit = currencyUnits[index]
             unitValue = decimal.Decimal(randUnit[0])
             if unitValue <= changeRemaining:
@@ -126,6 +127,11 @@ for x in f:
                 unitCounts[index] += 1
                 changeRemaining -= unitValue
                 debugPrint(changeRemaining)
+            else:
+                # Remove the too large unit from the random pool
+                maxUnitIndex = index + 1
+                debugPrint(f"Removing {randUnit[1]} as a random option")
+                debugPrint(maxUnitIndex)
         debugPrint(unitCounts)
         
         for index, unit in enumerate(currencyUnits):
